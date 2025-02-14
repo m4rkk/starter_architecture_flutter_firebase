@@ -1,8 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:starter_architecture_flutter_firebase/firebase_options.dart';
+import 'package:starter_architecture_flutter_firebase/firebase_options_dev.dart' as dev;
+import 'package:starter_architecture_flutter_firebase/firebase_options_stg.dart' as stg;
+import 'package:starter_architecture_flutter_firebase/firebase_options_prod.dart' as prod;
 import 'package:starter_architecture_flutter_firebase/src/app.dart';
 import 'package:starter_architecture_flutter_firebase/src/localization/string_hardcoded.dart';
 // ignore:depend_on_referenced_packages
@@ -16,11 +19,22 @@ Future<void> main() async {
   // * https://docs.flutter.dev/testing/errors
   registerErrorHandlers();
   // * Initialize Firebase
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await initializeFirebaseApp();
   // * Entry point of the app
   runApp(const ProviderScope(
     child: MyApp(),
   ));
+}
+
+Future<void> initializeFirebaseApp() async {
+  // Determine which Firebase options to use based on the flavor
+  final firebaseOptions = switch (appFlavor) {
+    'prod' => prod.DefaultFirebaseOptions.currentPlatform,
+    'stg' => stg.DefaultFirebaseOptions.currentPlatform,
+    'dev' => dev.DefaultFirebaseOptions.currentPlatform,
+    _ => throw UnsupportedError('Invalid flavor: $appFlavor'),
+  };
+  await Firebase.initializeApp(options: firebaseOptions);
 }
 
 void registerErrorHandlers() {
