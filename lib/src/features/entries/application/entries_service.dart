@@ -14,14 +14,13 @@ import 'package:starter_architecture_flutter_firebase/src/features/jobs/domain/j
 
 part 'entries_service.g.dart';
 
-// TODO: Clean up this code a bit more
 class EntriesService {
   EntriesService(
       {required this.jobsRepository, required this.entriesRepository});
   final JobsRepository jobsRepository;
   final EntriesRepository entriesRepository;
 
-  /// combine List<Job>, List<Entry> into List<EntryJob>
+  /// combine List`<Job>`, List`<Entry>` into List`<EntryJob>`
   Stream<List<EntryJob>> _allEntriesStream(UserID uid) =>
       CombineLatestStream.combine2(
         entriesRepository.watchEntries(uid: uid),
